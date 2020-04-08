@@ -1,0 +1,30 @@
+version: "3.7"
+
+services:
+  http-proxy:
+    image: &proxy tyilo/transparent-proxy
+    command: ["python", "http_proxy.py"]
+    networks:
+      - traefik
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.passthrough-test.priority=10000
+        - traefik.http.routers.passthrough-test.rule=Host(@HOSTS@)
+        - traefik.http.services.passthrough-test.loadbalancer.server.port=80
+
+  tls-proxy:
+    image: *proxy
+    command: ["python", "tls_proxy.py"]
+    networks:
+      - traefik
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.tcp.routers.tls-passthrough-test.rule=HostSNI(@HOSTS@)
+        - traefik.tcp.routers.tls-passthrough-test.tls.passthrough=true
+        - traefik.tcp.services.tls-passthrough-test.loadbalancer.server.port=443
+
+networks:
+  traefik:
+    external: true

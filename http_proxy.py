@@ -48,5 +48,5 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
         self.log_request(code=r.status, size=r.msg["Content-Length"])
 
 
-httpd = ThreadingHTTPServer(("", 10080), ProxyRequestHandler)
+httpd = ThreadingHTTPServer(("", 80), ProxyRequestHandler)
 httpd.serve_forever()
